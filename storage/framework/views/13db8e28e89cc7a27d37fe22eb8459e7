@@ -1,0 +1,70 @@
+<?php $__env->startSection('content'); ?>
+<div class="container">
+	<div class="row">
+		<div class="col-md-10 col-md-offset-1">
+			<div class="panel panel-default">
+				<div class="panel-heading"><?php echo e(trans('report-receiving.reports')); ?> - <?php echo e(trans('report-receiving.receivings_report')); ?></div>
+
+				<div class="panel-body">
+<div class="well well-sm"><?php echo e(trans('report-receiving.grand_total')); ?>: <?php echo e(DB::table('receiving_items')->sum('total_cost')); ?></div>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <td><?php echo e(trans('report-receiving.receiving_id')); ?></td>
+            <td><?php echo e(trans('report-receiving.date')); ?></td>
+            <td><?php echo e(trans('report-receiving.items_received')); ?></td>
+            <td><?php echo e(trans('report-receiving.received_by')); ?></td>
+            <td><?php echo e(trans('report-receiving.supplied_by')); ?></td>
+            <td><?php echo e(trans('report-receiving.total')); ?></td>
+            <td><?php echo e(trans('report-receiving.payment_type')); ?></td>
+            <td><?php echo e(trans('report-receiving.comments')); ?></td>
+            <td>&nbsp;</td>
+        </tr>
+    </thead>
+    <tbody>
+    <?php foreach($receivingReport as $value): ?>
+        <tr>
+            <td><?php echo e($value->id); ?></td>
+            <td><?php echo e($value->created_at); ?></td>
+            <td><?php echo e(DB::table('receiving_items')->where('receiving_id', $value->id)->sum('quantity')); ?></td>
+            <td><?php echo e($value->user->name); ?></td>
+            <td><?php echo e($value->supplier->company_name); ?></td>
+            <td><?php echo e(DB::table('receiving_items')->where('receiving_id', $value->id)->sum('total_cost')); ?></td>
+            <td><?php echo e($value->payment_type); ?></td>
+            <td><?php echo e($value->comments); ?></td>
+            <td>
+                <a class="btn btn-small btn-info" data-toggle="collapse" href="#detailedReceivings<?php echo e($value->id); ?>" aria-expanded="false" aria-controls="detailedReceivings"><?php echo e(trans('report-receiving.detail')); ?></a>
+            </td>
+        </tr>
+        
+            <tr class="collapse" id="detailedReceivings<?php echo e($value->id); ?>">
+                <td colspan="9">
+                    <table class="table">
+                        <tr>
+                            <td><?php echo e(trans('report-receiving.item_id')); ?></td>
+                            <td><?php echo e(trans('report-receiving.item_name')); ?></td>
+                            <td><?php echo e(trans('report-receiving.item_received')); ?></td>
+                            <td><?php echo e(trans('report-receiving.total')); ?></td>
+                        </tr>
+                        <?php foreach(ReportReceivingsDetailed::receiving_detailed($value->id) as $receiving_detailed): ?>
+                        <tr>
+                            <td><?php echo e($receiving_detailed->item_id); ?></td>
+                            <td><?php echo e($receiving_detailed->item->item_name); ?></td>
+                            <td><?php echo e($receiving_detailed->quantity); ?></td>
+                            <td><?php echo e($receiving_detailed->quantity * $receiving_detailed->cost_price); ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </table>
+                </td>
+            </tr>
+
+    <?php endforeach; ?>
+    </tbody>
+</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('app', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

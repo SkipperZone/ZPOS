@@ -1,0 +1,126 @@
+<?php $__env->startSection('content'); ?>
+<div class="container">
+	<div class="row">
+		<div class="col-md-12 ">
+			<div class="panel panel-default">
+				<div class="panel-heading"><?php echo e(trans('report-sale.reports')); ?> - <?php echo e(trans('report-sale.sales_report')); ?></div>
+
+				<div class="panel-body">
+                    <?php if(Session::has('error')): ?>
+                    <div class="alert alert-danger"><?php echo e(Session::get('error')); ?></div>
+                    <?php endif; ?>
+
+                    <?php if(Alert::has('error')): ?>
+                    <div class="alert alert-danger">
+                    <?php echo e(Alert::first('error')); ?>
+
+                    </div>
+                    <?php endif; ?>
+                    <div class="row">
+                        <div class="col-md-6" align="center">
+                            <div class="well well-sm"><h3><?php echo e(trans('report-sale.grand_total')); ?>: <?php echo e('Rp '.number_format(DB::table('sale_items')->sum('total_selling'),2,',','.')); ?></h3></div>
+                        </div>
+                        <div class="col-md-6" align="center">
+                            <div class="well well-sm"><h3><?php echo e(trans('report-sale.grand_profit')); ?>: <?php echo e('Rp '. number_format(DB::table('sale_items')->sum('total_selling') - DB::table('sale_items')->sum('total_cost'),2,',','.')); ?></h3></div>
+                        </div>
+                    </div>
+                    <?php if(Common::check_data('sale') > 0): ?>
+                <form method="GET" action="/sales/search">
+                <div class="row">
+                    <div class="col-md-12 well">
+                            <div class="form-group col-md-3">
+                            <?php echo Form::label('date', 'Dari Tanggal'); ?>
+
+                            <?php echo Form::text('date', '', array('id' => 'date','class' => 'form-control') ); ?>
+
+                            </div>
+                             <div class="form-group col-md-3">
+                            <?php echo Form::label('date2', 'Ke Tanggal'); ?>
+
+                            <?php echo Form::text('date2', '', array('id' => 'date2','class' => 'form-control') ); ?>
+
+                            </div>
+                       
+                            <div class="form-group col-md-4 ">
+                            <?php echo Form::label('date', 'ID atau Nama Customer'); ?>
+
+                            <?php echo Form::text('code', Input::old('code'), array('class' => 'form-control', 'placeholder'=>'Type sale code or customer name', 'id'=>'readSales', 'data'=>'typeahead', 'autocomplete' => 'off')); ?>
+
+
+                            </div>
+                            <?php echo Form::submit('Search', array('class' => 'btn btn-primary','style'=>'margin-top: 25px')); ?>
+
+                        </div>
+                   </div>     
+                 </form>
+
+                <?php endif; ?>
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th><?php echo e(trans('report-sale.date')); ?></th>
+            <th><?php echo e(trans('report-sale.sale_id')); ?></th>
+            <th><?php echo e(trans('report-sale.sold_by')); ?></th>
+            <th><?php echo e(trans('report-sale.sold_to')); ?></th>
+            <th><?php echo e(trans('report-sale.items_purchased')); ?></th>
+            <th ><?php echo e(trans('report-sale.total')); ?></th>
+            <th><?php echo e(trans('report-sale.profit')); ?></th>
+            <th><?php echo e(trans('report-sale.payment_type')); ?></th>
+            <th><?php echo e(trans('report-sale.comments')); ?></th>
+            <td>&nbsp;</td>
+        </tr>
+    </thead>
+    <tbody>
+    <?php foreach($saleReport as $value): ?>
+    <?php $datetime = explode(" ",$value->created_at); ?>
+        <tr>
+            <td><?php echo e($datetime[0]); ?></td>
+            <td><?php echo e('SL0000'.$value->id); ?></td>
+            <td><?php echo e($value->user->name); ?></td>
+            <td><?php echo e($value->customer_name); ?></td>
+            <td><?php echo e(DB::table('sale_items')->where('sale_id', $value->id)->sum('quantity')); ?></td>
+            <td align="right"><b><?php echo e(number_format(DB::table('sale_items')->where('sale_id', $value->id)->sum('total_selling'),0,',','.')); ?></b></td>
+            <td align="right"><b><?php echo e(number_format(DB::table('sale_items')->where('sale_id', $value->id)->sum('total_selling') - DB::table('sale_items')->where('sale_id', $value->id)->sum('total_cost'),0,',','.')); ?></b></td>
+            <td><?php echo e($value->payment_type); ?></td>
+            <td><?php echo e($value->comments); ?></td>
+            <td>
+                <a class="btn btn-small btn-info" data-toggle="collapse" href="#detailedSales<?php echo e($value->id); ?>" aria-expanded="false" aria-controls="detailedReceivings">
+                    <?php echo e(trans('report-sale.detail')); ?></a>
+            </td>
+        </tr>
+        
+            <tr class="collapse" id="detailedSales<?php echo e($value->id); ?>">
+                <td colspan="10">
+                    <table class="table">
+                        <tr>
+                            <th><?php echo e(trans('report-sale.item_id')); ?></th>
+                            <th><?php echo e(trans('report-sale.item_name')); ?></th>
+                            <th><?php echo e(trans('report-sale.quantity_purchase')); ?></th>
+                            <th><?php echo e(trans('report-sale.total')); ?></th>
+                            <th><?php echo e(trans('report-sale.profit')); ?></th>
+                        </tr>
+                        <?php foreach(ReportSalesDetailed::sale_detailed($value->id) as $SaleDetailed): ?>
+                        <tr>
+                            <td><?php echo e($SaleDetailed->item->barcode); ?></td>
+                            <td><?php echo e($SaleDetailed->item->item_name); ?></td>
+                            <td><?php echo e($SaleDetailed->quantity); ?></td>
+                            <td align="right"><?php echo e($SaleDetailed->selling_price * $SaleDetailed->quantity); ?></td>
+                            <td align="right"><?php echo e(($SaleDetailed->quantity * $SaleDetailed->selling_price) - ($SaleDetailed->quantity * $SaleDetailed->cost_price)); ?></td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </table>
+                </td>
+            </tr>
+
+    <?php endforeach; ?>
+    </tbody>
+</table>
+<?php echo $saleReport->render(); ?>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('app', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

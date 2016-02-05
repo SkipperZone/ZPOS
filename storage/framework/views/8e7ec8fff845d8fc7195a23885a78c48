@@ -1,0 +1,51 @@
+<?php $__env->startSection('content'); ?>
+<div class="container">
+	<div class="row">
+		<div class="col-md-10 col-md-offset-1">
+			<div class="panel panel-default">
+				<div class="panel-heading"><?php echo e(trans('itemgroup.list_itemgroups')); ?></div>
+
+				<div class="panel-body">
+				<a class="btn btn-small btn-success" href="<?php echo e(URL::to('item_group/create')); ?>"><?php echo e(trans('itemgroup.new_itemgroup')); ?></a>
+				<hr />
+<?php if(Session::has('message')): ?>
+    <p class="alert <?php echo e(Session::get('alert-class', 'alert-info')); ?>"><?php echo e(Session::get('message')); ?></p>
+<?php endif; ?>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <th><?php echo e(trans('itemgroup.itemgroup_code')); ?></th>
+            <th><?php echo e(trans('itemgroup.name')); ?></th>
+            <th><?php echo e(trans('itemgroup.desc')); ?></th>
+            <th></td>
+        </tr>
+    </thead>
+    <tbody>
+    <?php foreach($itemgroup as $value): ?>
+        <tr>
+            <td><?php echo e($value->code); ?></td>
+            <td><?php echo e($value->name); ?></td>
+            <td><?php echo e($value->desc); ?></td>
+            <td>
+                <?php echo Form::open(array('url' => 'warehouse/' . $value->id, 'class' => 'pull-right')); ?>
+
+                    <?php echo Form::hidden('_method', 'DELETE'); ?>
+
+                <a class="btn btn-warning btn-xs" href="<?php echo e(URL::to('item_group/' . $value->id . '/edit')); ?>" title="<?php echo e(trans('itemgroup.edit')); ?>" ><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                <button  onclick="return confirm('Are you sure want to delete group <?php echo e($value->name); ?> ?'); if (ok) return true; else return false" type="submit"class="btn btn-danger btn-xs" title="<?php echo e(trans('itemgroup.delete')); ?>" ><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                    <!-- <?php echo Form::submit(trans('itemgroup.delete'), array('class' => 'btn btn-warning btn-xs', 'title' => 'Delete')); ?> -->
+                <?php echo Form::close(); ?>
+
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('app', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

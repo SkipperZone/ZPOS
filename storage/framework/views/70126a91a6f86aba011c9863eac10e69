@@ -1,0 +1,47 @@
+<?php $__env->startSection('content'); ?>
+<div class="container">
+	<div class="row">
+		<div class="col-md-10 col-md-offset-1">
+			<div class="panel panel-default">
+				<div class="panel-heading"><?php echo e(trans('location.update_location')); ?></div>
+
+				<div class="panel-body">
+					<?php echo Html::ul($errors->all()); ?>
+
+
+					<?php echo Form::model($location, array('route' => array('warehouse.update', $location->id), 'method' => 'PUT', 'files' => true)); ?>
+
+
+					<div class="form-group">
+					<?php echo Form::label('code', trans('location.code').' *'); ?>
+
+					<?php echo Form::text('code', null, array('class' => 'form-control')); ?>
+
+					</div>
+
+					<div class="form-group">
+					<?php echo Form::label('name', trans('location.name').' *'); ?>
+
+					<?php echo Form::text('name', null, array('class' => 'form-control')); ?>
+
+					</div>
+
+					<div class="form-group">
+					<?php echo Form::label('desc', trans('location.desc')); ?>
+
+					<?php echo Form::text('desc', null, array('class' => 'form-control')); ?>
+
+					</div>
+
+					<?php echo Form::submit(trans('location.submit'), array('class' => 'btn btn-primary')); ?>
+
+
+					<?php echo Form::close(); ?>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('app', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

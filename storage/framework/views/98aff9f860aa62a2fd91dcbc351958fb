@@ -1,0 +1,112 @@
+<?php $__env->startSection('content'); ?>
+<div class="container">
+	<div class="row">
+		<div class="col-md-12 ">
+			<div class="panel panel-default">
+				<div class="panel-heading"><?php echo e(trans('item.list_items')); ?></div>
+               
+				<div class="panel-body">
+				<a class="btn btn-small btn-success" href="<?php echo e(URL::to('items/create')); ?>"><?php echo e(trans('item.new_item')); ?></a>
+				<hr />
+<?php if(Session::has('message')): ?>
+	<div class="alert alert-info"><?php echo e(Session::get('message')); ?></div>
+<?php endif; ?>
+
+<table class="table table-striped table-bordered">
+    <thead>
+        <tr>
+            <!-- <td><?php echo e(trans('item.item_id')); ?></td> -->
+            <td><?php echo e(trans('item.upc_ean_isbn')); ?></td>
+            <td><?php echo e(trans('item.item_name')); ?></td>
+            <td><?php echo e(trans('itemgroup.name')); ?></td>
+            <td><?php echo e(trans('item.size')); ?></td>
+            <td><?php echo e(trans('item.cost_price')); ?></td>
+            <td><?php echo e(trans('item.selling_price')); ?></td>
+            <td><?php echo e(trans('item.quantity')); ?></td>
+            <td>&nbsp;</td>
+            <td>Barcode</td>
+            <td><?php echo e(trans('item.avatar')); ?></td>
+           
+        </tr>
+    </thead>
+    <tbody>
+    <?php foreach($item as $value): ?>
+        <tr>
+            <!-- <td><?php echo e($value->id); ?></td> -->
+            <td><?php echo e($value->upc_ean_isbn); ?></td>
+            <td><?php echo e($value->item_name); ?></td>
+            <td><?php echo e($value->kategori->code); ?></td>
+            <td><?php echo e($value->size); ?></td>
+            <td><?php echo e('Rp. '.number_format($value->cost_price,2,',','.')); ?></td>
+            <td><?php echo e('Rp. '.number_format($value->selling_price,2,',','.')); ?></td>
+            <td><?php echo e($value->quantity); ?></td>
+            <td>
+
+                <a class="btn btn-warning btn-xs" href="<?php echo e(URL::to('inventory/' . $value->id . '/edit')); ?>" title="<?php echo e(trans('item.inventory')); ?>"><span class="glyphicon glyphicon-th" aria-hidden="true"></span></a>
+                <a class="btn btn-info btn-xs" href="<?php echo e(URL::to('items/' . $value->id . '/edit')); ?>" title="<?php echo e(trans('item.edit')); ?>"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></a>
+                <?php echo Form::open(array('url' => 'items/' . $value->id, 'class' => 'pull-right')); ?>
+
+                   <?php echo Form::hidden('_method', 'DELETE'); ?>
+
+                   <button type="submit"class="btn btn-danger btn-xs" title="<?php echo e(trans('item.delete')); ?>"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></button>
+                    <!-- <?php echo Form::submit(trans('item.delete'), array('class' => 'btn btn-warning')); ?> -->
+                <?php echo Form::close(); ?>
+
+            </td>
+            <!-- <td> <div id="<?php echo e($value->upc_ean_isbn); ?>"></div><input type="button" onclick='$("#<?php echo e($value->upc_ean_isbn); ?>").barcode("00000000000<?php echo e($value->id); ?>", "ean13",{barWidth:2, barHeight:30});' value="Print Barcode"></td> -->
+            <td><a class="btn btn-default btn-xs" title="<?php echo e(trans('item.barcode')); ?>" data-toggle="modal" data-target="#myModal"><span class="glyphicon glyphicon-barcode" aria-hidden="true"></span> <?php echo e(trans('item.barcode')); ?></a></td>
+            <!-- <td><a class="btn btn-default btn-xs" title="<?php echo e(trans('item.barcode')); ?>" href="<?php echo e(URL::to('items/barcode/print/' . $value->id )); ?>"><span class="glyphicon glyphicon-barcode" aria-hidden="true"></span> <?php echo e(trans('item.barcode')); ?></a></td> -->
+            <td><?php echo Html::image(url() . '/images/items/' . $value->avatar, 'a picture', array('class' => 'thumb')); ?></td>
+        </tr>
+
+    <?php endforeach; ?>
+    </tbody>
+</table>
+				</div>
+			</div>
+            <!-- Modal -->
+              <?php foreach($item as $value): ?>
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Masukan Jumlah Cetak</h4>
+      </div>
+      <div class="modal-body">
+       
+           <!--  <div class="form-group">
+                    <?php echo Form::label('qty', trans('item.quantity')); ?>
+
+                    <?php echo Form::text('quantity', null, array('class' => 'form-control')); ?>
+
+            </div> -->
+       <form action="/items/barcode/print/<?php echo e($value->id); ?>" action="post">
+        <div class="form-group">
+        <input type="text" name="jumlah" placeholder="Masukan Jumlah" class="form-control">
+      
+      
+      </div>
+      <div class="modal-footer">
+        <!-- <button type="button" class="btn btn-info" onclick="location.href = '<?php echo e(URL::to('items/barcode/print/' . $value->id)); ?>';">Cetak</button> -->
+        <button type="submit" class="btn btn-info" >Cetak</button>
+        </form>
+        <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
+      </div>
+      
+    </div>
+
+  </div>
+</div>
+		  <?php endforeach; ?>
+          </div>
+        </div>
+	</div>
+</div>
+<?php $__env->stopSection(); ?>
+
+
+
+<?php echo $__env->make('app', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>

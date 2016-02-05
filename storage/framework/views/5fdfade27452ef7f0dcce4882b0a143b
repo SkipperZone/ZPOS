@@ -1,0 +1,185 @@
+<?php $__env->startSection('content'); ?>
+<div class="container">
+	<div class="row">
+		<div class="col-md-10 col-md-offset-1">
+			<div class="panel panel-default">
+				<div class="panel-heading"><?php echo e(trans('location.new_mutation')); ?></div>
+				<div class="panel-body">
+					<?php echo Html::ul($errors->all()); ?>
+
+					<?php $data = Session::all(); print_r($data)?>
+					<?php if(!Session::has('master')): ?>
+					<?php echo Form::open(array('url' => 'warehouse_move_items/create')); ?>
+
+
+					<div class="form-group col-md-6">
+					<?php echo Form::label('no', trans('location.no') .' *'); ?>
+
+					<!-- <?php echo Form::text('no', Input::old('no'), array('class' => 'form-control', 'required', 'value' =>Common::no_auto('moving') )); ?> -->
+					<input class="form-control" required="required" name="no" type="text" id="no" value="<?php echo Common::no_auto('moving'); ?>">
+					</div>
+
+					<div class="form-group col-md-6">
+					<?php echo Form::label('date', trans('location.date') .' *'); ?>
+
+					<?php echo Form::date('date', \Carbon\Carbon::now(), array('class' => 'form-control', 'required')); ?>
+
+					</div>
+
+					<div class="form-group col-md-6">
+					<?php echo Form::label('loc_from', trans('location.from_location') .' *'); ?>
+
+					<?php echo Form::select('loc_from', $loc, 'null', array('class' => 'form-control', 'required')); ?>
+
+					</div>
+
+					<div class="form-group col-md-6">
+					<?php echo Form::label('loc_to', trans('location.to_location') .' *'); ?>
+
+					<?php echo Form::select('loc_to', $loc, 'null', array('class' => 'form-control', 'required')); ?>
+
+					</div>
+
+					<div class="form-group col-md-10">
+					<?php echo Form::label('desc', trans('location.desc')); ?>
+
+					<?php echo Form::text('desc', Input::old('desc'), array('class' => 'form-control', 'required')); ?>
+
+					</div>
+					
+					<div class="form-group col-md-2">
+					<?php echo Form::label(''); ?>
+
+						<div class="input-group">
+						<?php echo Form::submit(trans('location.submit'), array('class' => 'btn btn-primary', 'name' => 'next')); ?>
+
+						</div>
+					</div>
+					
+					<?php echo Form::close(); ?>
+
+				<?php else: ?>
+
+					<table class="table table-bordered">
+                         <tr>
+                             <th><?php echo e(trans('location.no')); ?></th>
+                             <th style="color: red; font-size: large"><?php echo e(Session::get("master.no")); ?></th>
+                         	<th><?php echo e(trans('location.date')); ?></th>
+                              <?php $date = date_create(Session::get("master.date"))?>
+                             <td><?php echo e(date_format($date,"d M Y")); ?></td>
+                         </tr>
+                       
+                         <tr>
+                             <th><?php echo e(trans('location.from_location')); ?></th>
+                             <td><?php echo e(Session::get("master.loc_from_name")); ?></td>
+                             <th><?php echo e(trans('location.to_location')); ?></th>
+                             <td><?php echo e(Session::get("master.loc_to_name")); ?></td>
+                         </tr>
+                         <tr>
+                         	<th><?php echo e(trans('location.desc')); ?></th>
+                         	<td colspan="3"><?php echo e(Session::get("master.desc")); ?></td>
+                         </tr>
+                    </table>
+                   
+                    <HR>
+
+				<div class="panel panel-default" id="entry">
+                  <div class="panel-heading"><strong>Entry your items below !</strong></div> 
+                    <div class="panel-body">
+
+                    
+                    <?php echo Form::open(['url' => 'warehouse_move_items/create/additems','id'=>'item_form']); ?>
+
+                     <div class="form-group col-md-6">
+                        <?php echo Form::label('barcode', trans('location.barcode')); ?>
+
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <i class="glyphicon glyphicon-barcode"></i>
+                            </span>
+                        <input type="text" name="barcode" class="form-control" id="barcode" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-md-4">
+                        <?php echo Form::label('qty', trans('location.qty')); ?>
+
+                            <div class="input-group">
+                                    <span class="input-group-addon">
+                                            <i class="glyphicon glyphicon-euro"></i>
+                                    </span>
+                                 <?php echo Form::text('qty', null, ['required'=>true, 'id'=>'qty','class' => 'form-control']); ?>                                
+                            </div>
+                    </div>
+                    
+                    <div class="form-group col-md-2">
+                        <?php echo Form::label(''); ?>
+
+                    	<div class="input-group">
+         	             <?php echo Form::submit('Add', ['class' => 'btn btn-primary','name' => 'additems']); ?>
+
+                  		</div>
+                  	</div>
+            
+                    <?php echo Form::close(); ?>
+
+
+                </div>  
+                <?php /* end of panel body */ ?>
+			</div>
+			  <?php if(Session::has('master')): ?>
+                    <table class="table table-striped table-bordered table-hover sortable">
+                             <thead>
+                             <tr class="bg-info">
+                                <th>No.</th>
+                                 <th><?php echo e(trans('item.item_name')); ?></th>
+                                 <th><?php echo e(trans('location.qty')); ?></th>
+                                 <th>Actions</th>
+                             </tr>
+                             </thead>
+                             <tbody>
+                            <?php $items = Session::get('items'); $no =1; ?>
+                            <?php $cses = count(Session::get('items')); ?>
+                            <?php if($cses > 0): ?>
+                            <?php foreach($items as $item): ?>
+                            <tr>
+                                <td><?php echo e($no); ?></td>
+                                <td><?php echo e($item['barcode']); ?></td>
+                                <td><?php echo e($item['qty']); ?> <input type="hidden" class="price" value="<?php echo e($item['qty']); ?>"></td>
+                                <td>
+                                     <?php echo Form::open(['url'=>["warehouse_move_items/removeitem/".$item['line']]]); ?>
+
+                                     <div class="btn-group">
+                                        <button type="submit" class="btn btn-danger glyphicon glyphicon-trash btn-sm" alt="Trash" title="Trash this" name="deleteitem" onclick="return confirm('Are you sure you want to delete this item?');"></button>                            
+                                     </div>
+                                     <?php echo Form::close(); ?>
+
+                                </td>
+                            </tr>
+                            <?php $no++?>
+                            <?php endforeach; ?>
+                            <?php else: ?>
+                            <tr>
+                                <td colspan="4" align="center">No Items !</td>
+                            </tr>
+                            <?php endif; ?>
+                             </tbody>
+
+                         </table>
+                         <?php if($cses > 0): ?>
+                         <div class="form-group">
+                         <?php echo Form::open(['url' => 'warehouse_move_items/saveall']); ?>
+
+                             <?php echo Form::submit('Save', ['class' => 'btn btn-warning form-control','name' => 'saveall','onclick' => "return confirm('Are you sure you want to post this items? This action will permanently store on database and can not undo !');"]); ?>
+
+                         <?php echo Form::close(); ?>    
+                         </div>
+                         <?php endif; ?>
+                    <?php endif; ?>
+			<?php endif; ?>
+			  </div>          
+		</div>
+	</div>
+</div>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('app', array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>
