@@ -1,0 +1,40 @@
+<?php
+
+return [
+
+	'list_items'	=> 'List Item',
+	'items'	=> 'Item',
+	'new_item'		=> 'New Item',
+	'item_id' 		=> 'Item ID',
+	// 'upc_ean_isbn'	=> 'UPC/EAN/ISBN',
+	'upc_ean_isbn'	=> 'UPC/EAN/ISBN',
+	'item_name' 	=> 'Item Name',
+	'size' 			=> 'Size',
+	'cost_price' 	=> 'Cost Price',
+	'grocery_price'	=> 'Grocery Price',
+	'selling_price' => 'Selling Price',
+	'selling_price2' => 'Selling Price2',
+	'selling_price3' => 'Selling Price3',
+	'qty_min' 		=> 'Qty Min',
+	'quantity'		=> 'Quantity',
+	'avatar'		=> 'Photo',
+	'disc_currency'	=> 'Discon (Rp.)',
+	'disc_persen'	=> 'Discon (%)',
+	'edit' => 'Edit',
+	'delete' => 'Delete',
+	'submit' => 'Submit',
+	'description' => 'Description',
+	'choose_avatar' => 'Choose Photo',
+	'inventory' => 'Inventory',
+	'update_item' => 'Update Item',
+	//inventory
+	'inventory_data_tracking' => 'Inventory Data Tracking',
+	'current_quantity' => 'Current Quantity',
+	'inventory_to_add_subtract' => 'Inventory to add/subtract',
+	'comments' => 'Comments',
+	'employee' => 'Employee',
+	'in_out_qty' => 'In/Out Qty',
+	'remarks' => 'Remarks',
+	'barcode' => 'Print Barcode',
+	'group'		=> 'Group Item'
+];
